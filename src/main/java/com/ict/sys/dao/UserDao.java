@@ -11,7 +11,6 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 import com.ict.base.dao.BaseDao;
-import com.ict.base.dao.Parameter;
 import com.ict.sys.entity.User;
 
 /**
@@ -23,7 +22,7 @@ import com.ict.sys.entity.User;
 @Repository
 public class UserDao extends BaseDao<User> {
 	public User findByLoginName(String loginName) {
-		return getByHql("from User where delFlag = :p1 and loginName = :p2", new Parameter(User.DEL_FLAG_NORMAL, loginName));
+		return getByHql("from User where delFlag = ?1 and loginName = ?2", User.DEL_FLAG_NORMAL, loginName);
 	}
 
 	public int deleteById(Long id) {
@@ -32,14 +31,14 @@ public class UserDao extends BaseDao<User> {
 
 	public int updatePasswordById(String newPassword, Long id) {
 		// public int updatePasswordById(String newPassword, String id){
-		return update("update User set password=:p1 where id = :p2", new Parameter(newPassword, id));
+		return update("update User set password= ?1 where id = ?2", newPassword, id);
 	}
 
 	public int updateLoginInfo(String loginIp, Date loginDate, Long id) {
-		return update("update User set loginIp=:p1, loginDate=:p2 where id = :p3", new Parameter(loginIp, loginDate, id));
+		return update("update User set loginIp= ?1, loginDate= ?2 where id = ?3", loginIp, loginDate, id);
 	}
 
 	public List<User> findAllList() {
-		return find("from User where delFlag=:p1 order by id", new Parameter(User.DEL_FLAG_NORMAL));
+		return find("from User where delFlag= ?1 order by id", User.DEL_FLAG_NORMAL);
 	}
 }

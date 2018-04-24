@@ -10,7 +10,6 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 import com.ict.base.dao.BaseDao;
-import com.ict.base.dao.Parameter;
 import com.ict.sys.entity.Menu;
 
 /**
@@ -27,37 +26,32 @@ public class MenuDao extends BaseDao<Menu> {
 	}
 
 	public List<Menu> findAllActivitiList() {
-		return find("from Menu where delFlag=:p1 and isActiviti = :p2 order by sort", Menu.DEL_FLAG_NORMAL, Menu.YES);
+		return find("from Menu where delFlag= ?1 and isActiviti = ?2 order by sort", Menu.DEL_FLAG_NORMAL, Menu.YES);
 	}
 
 	public List<Menu> findByParentIdsLike(String parentIds) {
-		return find("from Menu where parentIds like :p1", parentIds);
+		return find("from Menu where parentIds like ?1", parentIds);
 	}
 
 	public List<Menu> findAllList() {
-		return find("from Menu where delFlag=:p1 order by sort", Menu.DEL_FLAG_NORMAL);
+		return find("from Menu where delFlag= ?1 order by sort", Menu.DEL_FLAG_NORMAL);
 	}
 
 	// public List<Menu> findByUserId(String userId) {
 	public List<Menu> findByUserId(Long userId) {
-		return find("select distinct m from Menu m, Role r, User u where m in elements (r.menuList) and r in elements (u.roleList)"
-				+ " and m.delFlag=:p1 and r.delFlag=:p1 and u.delFlag=:p1 and u.id=:p2" + // or
-																							// (m.user.id=:p2
-																							// and
-																							// m.delFlag=:p1)"
-																							// +
-				" order by m.sort", Menu.DEL_FLAG_NORMAL, userId);
+		return find("select distinct m from Menu m, Role r, User u where m in elements (r.menuList) and r in elements (u.roleList)" + " and m.delFlag= ?1 and r.delFlag= ?2 and u.delFlag= ?3 and u.id= ?4"
+				+ " order by m.sort", Menu.DEL_FLAG_NORMAL, Menu.DEL_FLAG_NORMAL, Menu.DEL_FLAG_NORMAL, userId);
 	}
 
 	public List<Menu> findFirstMenuByUserIdAndSite(String site) {
-		return find("from Menu where delFlag=:p1 and site like :p2 order by sort", new Parameter(Menu.DEL_FLAG_NORMAL, "%" + site + "%"));
+		return find("from Menu where delFlag= ?1 and site like ?2 order by sort", Menu.DEL_FLAG_NORMAL, "%" + site + "%");
 	}
 
 	public List<Menu> findFirstMenuByUserIdAndSite(Long userId, String site) {
-		return find("select distinct m from Menu m, Role r, User u where m in elements (r.menuList) and r in elements (u.roleList)"
-				+ " and m.delFlag=:p1 and r.delFlag=:p1 and u.delFlag=:p1 and u.id=:p2" + " and m.site like :p3 order by m.sort", new Parameter(Menu.DEL_FLAG_NORMAL, userId, "%" + site + "%"));
+		return find("select distinct m from Menu m, Role r, User u where m in elements (r.menuList) and r in elements (u.roleList)" + " and m.delFlag= ?1 and r.delFlag= ?2 and u.delFlag= ?3 and u.id= ?4"
+				+ " and m.site like ?5 order by m.sort", Menu.DEL_FLAG_NORMAL, Menu.DEL_FLAG_NORMAL, Menu.DEL_FLAG_NORMAL, userId, "%" + site + "%");
 	}
 	public List<Menu> findByParentIds(String parentIds) {
-		return find("from Menu where delFlag=:p1 and parent.id = :p2 order by sort", new Parameter(Menu.DEL_FLAG_NORMAL, Long.parseLong(parentIds)));
+		return find("from Menu where delFlag= ?1 and parent.id = ?2 order by sort", Menu.DEL_FLAG_NORMAL, Long.parseLong(parentIds));
 	}
 }

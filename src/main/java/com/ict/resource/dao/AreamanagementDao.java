@@ -15,7 +15,7 @@ public class AreamanagementDao extends BaseDao<Areamanagement> {
 	 * @return
 	 */
 	public Areamanagement getWorkArea(long id) {
-		Areamanagement areamanagement = getByHql("from Areamanagement where id=:p1 and delFlag = :p2 order by sort", id, Areamanagement.DEL_FLAG_NORMAL);
+		Areamanagement areamanagement = getByHql("from Areamanagement where id= ?1 and delFlag = ?2 order by sort", id, Areamanagement.DEL_FLAG_NORMAL);
 		return areamanagement;
 	}
 

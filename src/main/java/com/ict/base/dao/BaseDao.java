@@ -1,6 +1,5 @@
 package com.ict.base.dao;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -312,7 +311,7 @@ public class BaseDao<T> {
 	 * @return
 	 */
 	public int deleteById(Serializable id) {
-		return update("update " + entityClass.getSimpleName() + " set delFlag='" + BaseEntity.DEL_FLAG_DELETE + "' where id = :p1", id);
+		return update("update " + entityClass.getSimpleName() + " set delFlag='" + BaseEntity.DEL_FLAG_DELETE + "' where id = ?1", id);
 	}
 
 	/**
@@ -323,7 +322,7 @@ public class BaseDao<T> {
 	 * @return
 	 */
 	public int deleteById(Serializable id, String likeParentIds) {
-		return update("update " + entityClass.getSimpleName() + " set delFlag = '" + BaseEntity.DEL_FLAG_DELETE + "' where id = :p1 or parentIds like :p2", id, likeParentIds);
+		return update("update " + entityClass.getSimpleName() + " set delFlag = '" + BaseEntity.DEL_FLAG_DELETE + "' where id = ?1 or parentIds like ?2", id, likeParentIds);
 	}
 
 	/**
@@ -334,7 +333,7 @@ public class BaseDao<T> {
 	 * @return
 	 */
 	public int updateDelFlag(Serializable id, String delFlag) {
-		return update("update " + entityClass.getSimpleName() + " set delFlag = :p2 where id = :p1", id, delFlag);
+		return update("update " + entityClass.getSimpleName() + " set delFlag = ?1 where id = ?2", delFlag, id);
 	}
 
 	/**
@@ -344,9 +343,11 @@ public class BaseDao<T> {
 	 * @param parameter
 	 * @return
 	 */
-	public Query createQuery(String sqlString, Object... parameter) {
-		Query query = entityManager.createNativeQuery(sqlString);
-		setParameter(query, parameter);
+	public Query createQuery(String qlString, Object... parameter) {
+		Query query = entityManager.createQuery(qlString);
+		if (qlString.lastIndexOf('?') != -1) {
+			setParameter(query, parameter);
+		}
 		return query;
 	}
 

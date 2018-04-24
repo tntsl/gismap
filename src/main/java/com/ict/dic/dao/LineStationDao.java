@@ -16,14 +16,14 @@ public class LineStationDao extends BaseDao<LineStation> {
 	}
 
 	public List<LineStation> findByLine(Long lineId) {
-		return find("from LineStation where delFlag=:p1 and line.id =:p2 and line.delFlag=:p3 order by sort", Station.DEL_FLAG_NORMAL, lineId, Line.DEL_FLAG_NORMAL);
+		return find("from LineStation where delFlag= ?1 and line.id = ?2 and line.delFlag= ?3 order by sort", Station.DEL_FLAG_NORMAL, lineId, Line.DEL_FLAG_NORMAL);
 	}
 
 	public List<LineStation> findByLineIdStartEndStationSort(Long lineId, Float startStationSort, Float endStationSort) {
-		return find("from LineStation where delFlag=:p1 and line.id =:p2 and line.delFlag=:p3 and sort between :p4 and :p5 order by sort", Station.DEL_FLAG_NORMAL, lineId, Line.DEL_FLAG_NORMAL,
+		return find("from LineStation where delFlag= ?1 and line.id = ?2 and line.delFlag= ?3 and sort between ?4 and ?5 order by sort", Station.DEL_FLAG_NORMAL, lineId, Line.DEL_FLAG_NORMAL,
 				startStationSort, endStationSort);
 	}
 	public LineStation getByLineStation(Long lineId, Long stId) {
-		return getByHql("from LineStation where delFlag=:p1 and  line.id=:p2 and station.id=:p3", LineStation.DEL_FLAG_NORMAL, lineId, stId);
+		return getByHql("from LineStation where delFlag= ?1 and line.id= ?2 and station.id= ?3", LineStation.DEL_FLAG_NORMAL, lineId, stId);
 	}
 }

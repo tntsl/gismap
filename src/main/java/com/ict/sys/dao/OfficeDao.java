@@ -10,7 +10,6 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 import com.ict.base.dao.BaseDao;
-import com.ict.base.dao.Parameter;
 import com.ict.sys.entity.Office;
 
 /**
@@ -27,9 +26,9 @@ public class OfficeDao extends BaseDao<Office> {
 	}
 
 	public List<Office> findByParentIdsLike(String parentIds) {
-		return find("from Office where parentIds like :p1", new Parameter(parentIds));
+		return find("from Office where parentIds like ?1", "%" + parentIds + "%");
 	}
 	public Office findRoot() {
-		return (Office) finfByHQL("from Office where delFlag = :p1 and id = 1", new Parameter(Office.DEL_FLAG_NORMAL));
+		return (Office) finfByHQL("from Office where delFlag = ?1 and id = 1", Office.DEL_FLAG_NORMAL);
 	}
 }

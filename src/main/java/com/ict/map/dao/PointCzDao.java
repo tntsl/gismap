@@ -19,7 +19,7 @@ public class PointCzDao extends BaseDao<PointCz> {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<PointCz> findPointCz(String code) {
-		Query query = entityManager.createNativeQuery("select * from SDE.POINTCZ where pointcode like ?", PointCz.class);
+		Query query = entityManager.createNativeQuery("select * from SDE.POINTCZ where pointcode like ?1", PointCz.class);
 		query.setParameter(0, "%" + code + "%");
 		return query.getResultList();
 	}
@@ -31,7 +31,7 @@ public class PointCzDao extends BaseDao<PointCz> {
 	 * @return
 	 */
 	public List<Object> findPointCzByName(String name) {
-		Query query = entityManager.createNativeQuery("select x,y from SDE.POINTCZ where POINTNAME=?", PointCz.class);
+		Query query = entityManager.createNativeQuery("select x,y from SDE.POINTCZ where POINTNAME= ?1", PointCz.class);
 		query.setParameter(0, name);
 		return query.getResultList();
 	}
