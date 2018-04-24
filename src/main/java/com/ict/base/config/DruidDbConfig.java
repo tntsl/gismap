@@ -9,10 +9,10 @@ import org.springframework.context.annotation.Primary;
 
 import com.alibaba.druid.pool.DruidDataSource;
 
-//@Configuration
+@Configuration
 public class DruidDbConfig {
 
-	@Value("${spring.datasource.driverClassName}")
+	@Value("${spring.datasource.driver-class-name}")
 	private String driverClass;
 	@Value("${spring.datasource.url}")
 	private String jdbcUrl;
@@ -21,8 +21,8 @@ public class DruidDbConfig {
 	@Value("${spring.datasource.password}")
 	private String password;
 
-//	@Bean(initMethod = "init", destroyMethod = "close")
-////	@Primary
+	@Bean(initMethod = "init", destroyMethod = "close")
+	@Primary
 	public DataSource dataSource() {
 		DruidDataSource dataSource = new DruidDataSource();
 		dataSource.setDriverClassName(driverClass);
