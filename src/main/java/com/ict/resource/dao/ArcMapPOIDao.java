@@ -33,7 +33,7 @@ public class ArcMapPOIDao extends BaseDao<Object> {
 	 * @return
 	 */
 	public List<Object[]> findAllRestypeName() {
-		List<Object[]> restypeName = createSqlQuery("select distinct name FROM ep_res_restype", null).getResultList();
+		List<Object[]> restypeName = createSqlQuery("select distinct name from ep_res_restype").getResultList();
 		return restypeName;
 	}
 

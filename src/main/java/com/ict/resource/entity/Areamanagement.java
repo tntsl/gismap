@@ -8,6 +8,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
+import javax.persistence.Transient;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -32,6 +35,7 @@ public class Areamanagement extends DataEntity {
 	@Expose
 	private Long id;
 	@Expose
+	@NotBlank
 	private String name;// 车站名称
 	@Expose
 	private Line line;// 线路
@@ -45,9 +49,12 @@ public class Areamanagement extends DataEntity {
 	private String person;// 联系人
 	@Expose
 	private Integer stype;// 1:工区；2：变电所；3；段场
+	private String ctype;
 	@Expose
+	@NotNull
 	private String x;
 	@Expose
+	@NotNull
 	private String y;
 	@Expose
 	private String stationtype;// 车站型式
@@ -177,6 +184,15 @@ public class Areamanagement extends DataEntity {
 
 	public void setInfraarea(String infraarea) {
 		this.infraarea = infraarea;
+	}
+
+	@Transient
+	public String getCtype() {
+		return ctype;
+	}
+
+	public void setCtype(String ctype) {
+		this.ctype = ctype;
 	}
 
 }

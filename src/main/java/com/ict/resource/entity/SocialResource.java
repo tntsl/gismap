@@ -6,11 +6,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
-
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
+import javax.persistence.Transient;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import com.ict.base.entity.DataEntity;
 
@@ -22,19 +20,21 @@ import com.ict.base.entity.DataEntity;
  */
 @Entity
 @Table(name = "ep_res_social")
-@DynamicInsert
-@DynamicUpdate
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class SocialResource extends DataEntity {
 
 	private static final long serialVersionUID = 1L;
 	private Long id;
+	@NotBlank(message = "名称不能为空")
 	private String name;// 名称
+	@NotBlank(message = "地址不能为空")
 	private String addr;// 地址
 	private String person; // 负责人
 	private String phone;// 电话
 	private Integer stype;// 1-公安；2-医院；3-消防
+	private String ctype;
+	@NotNull(message = "X坐标不能为空")
 	private String x;
+	@NotNull(message = "Y坐标不能为空")
 	private String y;
 
 	private String region;// 区域
@@ -124,6 +124,13 @@ public class SocialResource extends DataEntity {
 	}
 	public void setSpecialequip(String specialequip) {
 		this.specialequip = specialequip;
+	}
+	@Transient
+	public String getCtype() {
+		return ctype;
+	}
+	public void setCtype(String ctype) {
+		this.ctype = ctype;
 	}
 
 }

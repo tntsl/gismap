@@ -1,5 +1,6 @@
 package com.ict.resource.entity;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -146,7 +147,7 @@ public class RescueTeam extends DataEntity {
 	// public void setPersonEmail(String personEmail) {
 	// this.personEmail = personEmail;
 	// }
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.MERGE)
 	@JoinColumn(name = "line_id")
 	public Line getLine() {
 		return this.line;

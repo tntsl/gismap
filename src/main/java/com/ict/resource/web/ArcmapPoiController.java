@@ -1,6 +1,5 @@
 package com.ict.resource.web;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,12 +8,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ict.dic.entity.ResType;
 import com.ict.dic.service.ResTypeService;
 import com.ict.resource.entity.Material;
+import com.ict.resource.entity.SocialResource;
 import com.ict.resource.service.ArcmapPoiService;
 import com.ict.resource.service.MaterialService;
+import com.ict.resource.service.SocialResourceService;
 
 @Controller
 @RequestMapping("arcmap/poi")
@@ -27,6 +29,9 @@ public class ArcmapPoiController {
 	private MaterialService materialService;
 
 	@Autowired
+	private SocialResourceService socialResourceService;
+
+	@Autowired
 	private ResTypeService resTypeService;
 
 	/**
@@ -37,10 +42,9 @@ public class ArcmapPoiController {
 	 */
 	@RequestMapping("getPoi")
 	@ResponseBody
-	public List<Object[]> findArcmapPoi(String data) {
-		String[] strs = data.split(",");
-		List<Object[]> poiList = aPoiService.findArcmapPoi(Arrays.asList(strs));
-		return poiList;
+	public String findArcmapPoi(String data) {
+		List<SocialResource> socialResources = socialResourceService.findAll();
+		return new Gson().toJson(socialResources);
 	}
 
 	/**
@@ -49,9 +53,9 @@ public class ArcmapPoiController {
 	 * @param id
 	 * @return
 	 */
-	@RequestMapping("getMaterial/{pointCodes}")
+	@RequestMapping("getMaterial")
 	@ResponseBody
-	public String getMaterial(@PathVariable String pointCodes) {
+	public String getMaterial(String pointCodes) {
 		List<Material> material = materialService.listByStationCode(pointCodes);
 		return new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().toJson(material);
 	}
@@ -63,9 +67,9 @@ public class ArcmapPoiController {
 	 */
 	@RequestMapping("getRestypeName")
 	@ResponseBody
-	public List<Object[]> findAllRestypeName() {
-		List<Object[]> restypeName = aPoiService.findAllRestypeName();
-		return restypeName;
+	public String findAllRestypeName() {
+		List<ResType> resTypes = resTypeService.findAll();
+		return new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().toJson(resTypes);
 	}
 
 	/**

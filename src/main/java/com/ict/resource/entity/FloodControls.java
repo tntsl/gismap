@@ -10,19 +10,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ict.base.entity.DataEntity;
 import com.ict.dic.entity.Line;
 @Entity
 @Table(name = "occ_floodcontrols_infor")
-@DynamicInsert
-@DynamicUpdate
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class FloodControls extends DataEntity {
 
 	private static final long serialVersionUID = 1L;

@@ -1,0 +1,184 @@
+html
+{
+    margin:0px auto;padding:0px;height:100%;overflow:hidden;
+}
+body
+{
+    margin:0px auto;padding:0px;height:100%;overflow:hidden;
+}
+#map
+{
+    width:100%;height:100%;
+}
+.logo-med
+{
+    display:none;
+}
+
+.tbtools
+{
+   position:absolute; left:0px; z-index:100;width:100%;
+    border:1px solid #807f7f;
+        -moz-border-radius:8px; /* Old Firefox */
+        border-radius:8px;
+        background: -webkit-linear-gradient(#cfd3e9,#dfe3f5, #cfd3e9); /* Safari 5.1 - 6.0 */
+        background: -o-linear-gradient(#cfd3e9,#dfe3f5, #cfd3e9); /* Opera 11.1 - 12.0 */
+        background: -moz-linear-gradient(#cfd3e9,#dfe3f5, #cfd3e9); /* Firefox 3.6 - 15 */
+        background: linear-gradient(#cfd3e9,#dfe3f5, #cfd3e9); /* ��׼���﷨������������ */
+        filter: alpha(opacity=95); opacity: 0.95;
+        background-color:#cfd3e9;
+}
+.tbtools img
+{
+    height:26px;
+}
+.tbinfo
+{
+    background-color:Gray;display:none;position:absolute;right:20px;top:40px;color:White;font-size:12px;z-index:101;
+    border:1px solid #040784;
+    border-radius:8px;
+        -moz-border-radius:8px; /* Old Firefox */
+        background: -webkit-linear-gradient(#4336e7,#5f55e1, #2418c1); /* Safari 5.1 - 6.0 */
+        background: -o-linear-gradient(#4336e7,#5f55e1, #2418c1); /* Opera 11.1 - 12.0 */
+        background: -moz-linear-gradient(#4336e7,#5f55e1, #2418c1); /* Firefox 3.6 - 15 */
+        background: linear-gradient(#4336e7,#5f55e1, #2418c1); /* ��׼���﷨������������ */
+        filter: alpha(opacity=70); opacity: 0.7;
+}
+.tbinfo td
+{
+    padding:5px;
+    height:20px;
+}
+
+/*��ť��ʽ*/
+.divbtn
+{
+    border-radius:10px;padding:5px;text-align:center;
+    -moz-border-radius:10px; /* Old Firefox */
+   cursor:pointer;
+   font-size:12px;color:White;
+   background-color:#337AB7;
+}
+.divbtn1
+{
+   background-color:#286090;
+}
+
+/*���*/
+b {display:inline-block; width:18px; height:2px; background:#f67723; font-size:0; line-height:0;vertical-align:middle;-webkit-transform: rotate(45deg);}
+b:after { content:'.'; display:block; width:18px; height:2px; background:#f67723;-webkit-transform: rotate(-90deg);}
+
+/*Gis内置样式*/
+/*
+.titlePane
+{
+   background: -webkit-linear-gradient(#d9d2d2,#b3b4dc, #d9d2d2); /* Safari 5.1 - 6.0 */
+   background: -o-linear-gradient(#d9d2d2,#b3b4dc, #d9d2d2); /* Opera 11.1 - 12.0 */
+   background: -moz-linear-gradient(#d9d2d2,#b3b4dc, #d9d2d2); /* Firefox 3.6 - 15 */
+   background: linear-gradient(#d9d2d2,#b3b4dc, #d9d2d2); /* ��׼���﷨������������ */
+   
+}   
+*/
+.title
+{
+    color:#474646;
+}
+.esriPopupWrapper
+{
+    
+}
+.contentPane
+{
+ 
+}
+.actionsPane
+{
+   
+}
+.maximize{display:none}
+
+/*Gis内置样式*/
+
+
+/*输入框样式*/
+.txt_01
+{
+    border:1px solid #286090;
+    border-radius:8px;
+}
+.select_01{
+	border:1px solid #286090;
+    border-radius:6px;
+    height:22px;
+    min-width:130px;
+}
+/*输入框样式*/
+
+
+/*infoWindow弹出对话框气泡样式*/
+.infoWTb{
+	width:100%;text-align:center;
+    font-size:13px;
+}
+.infoWTBTittle{
+	background-color:#cfd3e9;
+    background: -webkit-linear-gradient(#cfd3e9,#dfe3f5, #cfd3e9); /* Safari 5.1 - 6.0 */
+    background: -o-linear-gradient(#cfd3e9,#dfe3f5, #cfd3e9); /* Opera 11.1 - 12.0 */
+    background: -moz-linear-gradient(#cfd3e9,#dfe3f5, #cfd3e9); /* Firefox 3.6 - 15 */
+    background: linear-gradient(#cfd3e9,#dfe3f5, #cfd3e9); /* ��׼���﷨������������ */
+}
+
+.infoWTb td{
+	height:28px;
+	border-bottom:1px dashed #c0c0c0;
+}
+.infoWTBTittle td{
+	border-bottom:0px;
+}
+/*infoWindow弹出对话框气泡样式*/
+
+/*弹出的浮动框*/
+.infoTemplate
+{
+    position:absolute; left:3px; top:3px; z-index:100;
+    display:none;
+    font-size:13px;
+    border:1px solid #8b8886;
+    border-radius:10px;
+    background-color:White;
+}
+.infoTemplate td
+{
+    height:28px;
+}
+.infotbQT{
+	background-color:black;
+	 border-radius:8px 8px 0px 0px;
+    -moz-border-radius:8px 8px 0px 0px; /* Old Firefox */
+    color:white;
+}
+.infoTemplateTittle
+{
+    background-color:#cfd3e9;
+    background: -webkit-linear-gradient(#cfd3e9,#dfe3f5, #cfd3e9); /* Safari 5.1 - 6.0 */
+    background: -o-linear-gradient(#cfd3e9,#dfe3f5, #cfd3e9); /* Opera 11.1 - 12.0 */
+    background: -moz-linear-gradient(#cfd3e9,#dfe3f5, #cfd3e9); /* Firefox 3.6 - 15 */
+    background: linear-gradient(#cfd3e9,#dfe3f5, #cfd3e9); /* ��׼���﷨������������ */
+}
+.infoTemplateTB
+{
+    width:100%;text-align:center;
+}
+.infoTemplateTB td
+{
+    padding-left:0px;padding-right:0px;
+    border-bottom:1px dashed #c0c0c0;
+}
+.infoTemplateTittle td{
+	border-bottom:0px;
+}
+/*弹出的浮动框*/
+
+.esriPopup .actionsPane .zoomTo {  
+     		display: none;  
+		}

@@ -15,9 +15,10 @@ public class FloodControlsService extends BaseService {
 	private FloodControlsDao floodControlsDao;
 
 	public List<FloodControls> getLastFloodControls() {
-		List<FloodControls> list = floodControlsDao.createSqlQuery(
-				"select ID ,CODE ,CREATE_DATE ,DEL_FLAG ,REMARK ,SORT ,UPDATE_DATE ,SEND_DATE ,CREATE_BY ,CREATE_OFFICE ,UPDATE_BY ,UPDATE_OFFICE ,LINE_ID ,BEGIN_DATE from (select i.*,ROW_NUMBER() OVER (PARTITION BY i.LINE_ID ORDER BY i.BEGIN_DATE desc) rIndex from occ_floodcontrols_infor i) where rIndex=1",
-				null).getResultList();
+		List<FloodControls> list = floodControlsDao
+				.createEntitySqlQuery(
+						"select id ,code ,create_date ,del_flag ,remark ,sort ,update_date ,send_date ,create_by ,create_office ,update_by ,update_office ,line_id ,begin_date from (select i.*,row_number() over (partition by i.line_id order by i.begin_date desc) rindex from occ_floodcontrols_infor i) where rindex=1")
+				.getResultList();
 		return list;
 	}
 

@@ -1,6 +1,8 @@
 package com.ict.resource.service;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Properties;
 import java.util.StringTokenizer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -13,6 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ict.base.entity.Page;
 import com.ict.base.service.BaseService;
+import com.ict.base.utils.HttpUtils;
+import com.ict.dic.dao.LineDao;
+import com.ict.dic.entity.Line;
 import com.ict.resource.dao.RescueTeamDao;
 import com.ict.resource.entity.RescueTeam;
 
@@ -21,55 +26,68 @@ import com.ict.resource.entity.RescueTeam;
 public class RescueTeamService extends BaseService {
 
 	@Autowired
+	private Properties global;
+
+	@Autowired
+	private LineDao LineDao;
+
+	@Autowired
 	private RescueTeamDao rescueTeamDao;
 
 	public RescueTeam get(Long id) {
-		return this.rescueTeamDao.get(id);
+		return rescueTeamDao.get(id);
 	}
 
 	public List<RescueTeam> findAll() {
-		return this.rescueTeamDao.findAllList();
+		return rescueTeamDao.findAllList();
 	}
 
 	public RescueTeam getRescueTeamByName(String name) {
-		return this.rescueTeamDao.findByName(name);
+		return rescueTeamDao.findByName(name);
 	}
 
 	// public Integer findByLineId(Long lineId) {
-	// return this.RescueTeamDao.findByLineId(lineId);
+	// return RescueTeamDao.findByLineId(lineId);
 	// }
 
 	public List<RescueTeam> findRescueTeamList() {
-		return this.rescueTeamDao.findRescueTeamList();
+		return rescueTeamDao.findRescueTeamList();
 	}
 
 	// public List<RescueTeam> findFlexByLineId(Long lineId) {
-	// return this.RescueTeamDao.findFlexByLineId(lineId);
+	// return RescueTeamDao.findFlexByLineId(lineId);
 	// }
 
 	public Page<RescueTeam> find(Page<RescueTeam> page, RescueTeam entity, boolean isDataScopeFilter) {
-		DetachedCriteria dc = this.rescueTeamDao.createDetachedCriteria(new Criterion[0]);
+		DetachedCriteria dc = rescueTeamDao.createDetachedCriteria(new Criterion[0]);
 		if (StringUtils.isNotEmpty(entity.getName())) {
 			dc.add(Restrictions.like("name", "%" + entity.getName() + "%"));
 		}
 		// dc.addOrder(Order.asc("lineId"));
 		dc.add(Restrictions.eq("delFlag", entity.getDelFlag()));
-		return this.rescueTeamDao.find(page, dc);
+		return rescueTeamDao.find(page, dc);
 	}
 
 	public RescueTeam getRescueTeam(Long id) {
-		return (RescueTeam) this.rescueTeamDao.get(id);
+		return (RescueTeam) rescueTeamDao.get(id);
 	}
 
 	@Transactional(readOnly = false)
-	public void save(RescueTeam RescueTeam) {
-		this.rescueTeamDao.clear();
-		this.rescueTeamDao.save(RescueTeam);
+	public void save(RescueTeam rescueTeam) throws IOException {
+		Line line = rescueTeam.getLine();
+		if (line != null) {
+			Long lineId = line.getId();
+			line = LineDao.get(lineId);
+			rescueTeam.setLine(line);
+		}
+		rescueTeamDao.save(rescueTeam);
+		String features = "[{'geometry':{'y':" + rescueTeam.getY() + ",'x':" + rescueTeam.getX() + "},'attributes':{'POINTID':'" + rescueTeam.getId() + "'}}]";
+		addFeature(8, features);
 	}
 
 	@Transactional(readOnly = false)
 	public void delete(Long id) {
-		this.rescueTeamDao.deleteById(id);
+		rescueTeamDao.deleteById(id);
 	}
 
 	@Transactional(readOnly = false)
@@ -77,7 +95,7 @@ public class RescueTeamService extends BaseService {
 		StringTokenizer delTokens = new StringTokenizer(ids, ",");
 		while (delTokens.hasMoreTokens()) {
 			Long id = Long.valueOf(delTokens.nextToken());
-			this.rescueTeamDao.deleteById(id);
+			rescueTeamDao.deleteById(id);
 		}
 	}
 
@@ -86,7 +104,20 @@ public class RescueTeamService extends BaseService {
 		while (ids.endsWith(",")) {
 			ids = ids.substring(0, ids.length() - 1);
 		}
-		List<RescueTeam> teams = rescueTeamDao.createQuery("from Team where delFlag=0 and id in(" + ids + ")", null).getResultList();
+		List<RescueTeam> teams = rescueTeamDao.createQuery("from RescueTeam where delFlag=0 and id in(" + ids + ")", null).getResultList();
 		return teams;
+	}
+
+	/**
+	 * 添加数据到空间数据库
+	 *
+	 * @param layer
+	 * @return
+	 * @throws IOException
+	 */
+	public String addFeature(int layer, String features) throws IOException {
+		String serverUrl = global.getProperty("gis.server.url");
+		String featureUrl = serverUrl + "/arcgis/rest/services/Point_PolyLine/FeatureServer/" + layer + "/addFeatures";
+		return HttpUtils.sendPostRequest(featureUrl, features);
 	}
 }

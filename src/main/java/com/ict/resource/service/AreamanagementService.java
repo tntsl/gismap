@@ -1,7 +1,9 @@
 package com.ict.resource.service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.StringTokenizer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -15,12 +17,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ict.base.entity.Page;
 import com.ict.base.service.BaseService;
+import com.ict.base.utils.FeatureUtils;
+import com.ict.base.utils.HttpUtils;
 import com.ict.resource.dao.AreamanagementDao;
 import com.ict.resource.entity.Areamanagement;
 
 @Service
 @Transactional(transactionManager = "transactionManager")
 public class AreamanagementService extends BaseService {
+
+	@Autowired
+	private Properties global;
 
 	@Autowired
 	private AreamanagementDao areamanagementDao;
@@ -111,11 +118,27 @@ public class AreamanagementService extends BaseService {
 		return (Areamanagement) areamanagementDao.get(id);
 	}
 
-	public void save(Areamanagement areamanagement) {
-		areamanagementDao.clear();
+	public void save(Areamanagement areamanagement) throws Exception {
+		String ctype = areamanagement.getCtype();
+		// stype 1:工区；2：变电所；3；段场
+		int stype = 0;
+		switch (ctype) {
+			case "workArea" :
+				stype = 1;
+				break;
+			case "substation" :
+				stype = 2;
+				break;
+			case "depot" :
+				stype = 3;
+				break;
+		}
+		areamanagement.setStype(stype);
 		areamanagement.setLinename(areamanagement.getLine().getName());
-
 		areamanagementDao.save(areamanagement);
+		String features = "[{'geometry':{'y':" + areamanagement.getY() + ",'x':" + areamanagement.getX() + "},'attributes':{'POINTID':'" + areamanagement.getId() + "'}}]";
+		String layerUrl = FeatureUtils.getProperty(global, ctype);
+		FeatureUtils.addFeature(layerUrl, features);
 	}
 
 	public void delete(Long id) {
@@ -166,5 +189,16 @@ public class AreamanagementService extends BaseService {
 		List<Areamanagement> workAreas = areamanagementDao.createQuery("from Areamanagement where id in(" + workAreaIds + ") and delFlag=0", null).getResultList();
 		return workAreas;
 	}
-
+	/**
+	 * 添加数据到空间数据库
+	 *
+	 * @param layer
+	 * @return
+	 * @throws IOException
+	 */
+	public String addFeature(int layer, String features) throws IOException {
+		String serverUrl = global.getProperty("gis.server.url");
+		String featureUrl = serverUrl + "/arcgis/rest/services/Point_PolyLine/FeatureServer/" + layer + "/addFeatures";
+		return HttpUtils.sendPostRequest(featureUrl, features);
+	}
 }

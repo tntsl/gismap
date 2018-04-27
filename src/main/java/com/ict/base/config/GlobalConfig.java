@@ -7,12 +7,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConfigurationProperties(prefix = "ict.global")
 public class GlobalConfig {
-	private Properties properties = new Properties();
 
 	@Bean
+	@ConfigurationProperties(prefix = "ict.global.properties")
 	public Properties global() {
+		Properties properties = new Properties();
 		return properties;
 	}
 }

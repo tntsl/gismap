@@ -494,6 +494,19 @@ public class BaseDao<T> {
 		return query;
 	}
 
+	/**
+	 * 创建 SQL 查询对象
+	 *
+	 * @param sqlString
+	 * @param parameter
+	 * @return
+	 */
+	public Query createEntitySqlQuery(String sqlString, Object... parameter) {
+		Query query = entityManager.createNativeQuery(sqlString, entityClass);
+		setParameter(query, parameter);
+		return query;
+	}
+
 	// -------------- Query Tools --------------
 
 	/**
