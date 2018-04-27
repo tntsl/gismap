@@ -436,7 +436,7 @@ function getStationByCode(stationCode){
 	var stations=getStationPointDic();
 	for(var i=0,max=stations.length;i<max;i++){
 		var station=stations[i];
-		if(station&&station.pointCode&&station.pointCode==stationCode){
+		if(station&&station.pointCode&&(station.pointCode===stationCode||station.pointCode.indexOf(stationCode)!=-1)){
 			return station;
 		}
 	}
@@ -545,8 +545,8 @@ function generateRescueTeamForm(x, y, station, selectNode, rescueTeam) {
 	resourceTrNode.append(resourceSelectTdNode);
 	tableNode.append(resourceTrNode);
 	tableNode.append("<tr><td>名称：</td><td><input type='text' name='name' value='" + (rescueTeam.name || "") + "'></td></tr>");
-	tableNode.append("<tr><td>队长：</td><td><input type='text' name='leaderName' value='" + (rescueTeam.person || "") + "'></td></tr>");
-	tableNode.append("<tr><td>队长电话：</td><td><input type='text' name='mobile' value='" + (rescueTeam.phone || "") + "'></td></tr>");
+	tableNode.append("<tr><td>队长：</td><td><input type='text' name='leaderName' value='" + (rescueTeam.leaderName || "") + "'></td></tr>");
+	tableNode.append("<tr><td>队长电话：</td><td><input type='text' name='mobile' value='" + (rescueTeam.mobile || "") + "'></td></tr>");
 	var lineSelectNode = generateLineSelectNode({
 		"name" : "line.id",
 		"class" : "select_01"
@@ -667,7 +667,7 @@ function generateDepotForm(x, y, station, selectNode, depot) {
 }
 // 生成应急物资列表
 var colorFulSelections=["blue","red","green","purple"];
-function generateMaterialList(target,materials,img,keepPreviousData){
+function generateMaterialList(target,materials,keepPreviousData){
 	var searchTool="<table id='queryTable' style='width:100%;'><tr><td><input name='keyWords' style='margin:5px;width:65%;' placeholder='请输入要查询的关键字。。' onfocus='addEnterListen(\""+target+"\",this)' onblur='clearEnterListen();' /><button type='button' onclick='filterMaterialList(\""+target+"\",this)'>查找</button>&nbsp;<button type='button' onclick='resetMaterialList(\""+target+"\",this)'>重置</button></td></tr></table>";
 	// 是否保留之前的记录
 	if(keepPreviousData!==true){
@@ -698,10 +698,9 @@ function generateMaterialList(target,materials,img,keepPreviousData){
 				if(!station){
 					return;
 				}
-				if(img){
-					var graphic= generateMaterialPoint(station,img);
-					myMap.graphics.add(graphic);
-				}
+				var img=material.restypeId.parent.shortName;
+				var graphic= generateMaterialPoint(station,img);
+				myMap.graphics.add(graphic);
 				var addressDetail="";
 				if(material.addressDetail){
 					addressDetail =material.addressDetail=="库存"?"":"<font color='red' >&nbsp;["+material.addressDetail+"]</font>";
@@ -862,7 +861,7 @@ function generateDepotPoint(depots){
 
 // 生成应急物资点
 function generateMaterialPoint(station,img){
-	var point = new esri.geometry.Point(station.x, station.y, new esri.SpatialReference({
+	var point = new esri.geometry.Point(station.x||0, station.y||0, new esri.SpatialReference({
 		wkid : 4490
 	}));
 	var symbol = new esri.symbol.PictureMarkerSymbol(ctxStatic + "/images/restypeImage/" + img + ".png", 25, 25);

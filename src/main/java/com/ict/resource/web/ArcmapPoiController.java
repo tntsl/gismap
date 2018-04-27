@@ -78,10 +78,10 @@ public class ArcmapPoiController {
 	 * @param name
 	 * @return
 	 */
-	@RequestMapping("getMaterialByResName/{name}")
+	@RequestMapping("getMaterialByResName")
 	@ResponseBody
-	public String findMaterialByResName(@PathVariable String name) {
-		List<ResType> resId = aPoiService.findRestypeidByName(name);
+	public String findMaterialByResName(String names) {
+		List<ResType> resId = aPoiService.findRestypeidByName(names);
 		List<Material> meterial = materialService.findbyRestypeId(String.valueOf(resId.get(0).getId()));
 		return new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().toJson(meterial);
 	}

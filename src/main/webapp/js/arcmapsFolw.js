@@ -1,14 +1,14 @@
 ﻿var myMap, extent, CircleQ, SimpleFillSymbolQ, navToolbar, toolbar, PictureMarkerSymbolQ, GraphicQ, InfoTemplateQ, SpatialReferenceQ, dojoQ, identifyTask, identifyTask2, identifyParams, gl, LengthsParametersQ, AreasAndLengthsParametersQ, symbol, dr, gsvc, showPt, measuregeometry, queryQj, queryTaskQj, querySpa, queryOrAdd, normalizeUtilsQ, esriConfigQ, EditQ, eventQ, editToolbarQ, myDynamicMapServiceLayer, arcgisUtilsQ, Chart2DQ;
 var app = {};
 var lineId = "";
-require([ "esri/map", "esri/geometry/Extent", "esri/geometry/Circle", "esri/symbols/SimpleFillSymbol", "esri/toolbars/draw", "esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
+require(["esri/map", "esri/geometry/Extent", "esri/geometry/Circle", "esri/symbols/SimpleFillSymbol", "esri/toolbars/draw", "esri/symbols/SimpleMarkerSymbol", "esri/symbols/SimpleLineSymbol",
 		"esri/symbols/PictureMarkerSymbol", "esri/geometry/Point", "esri/layers/GraphicsLayer", "esri/layers/FeatureLayer", "esri/symbols/PictureFillSymbol", "esri/symbols/CartographicLineSymbol",
 		"esri/SpatialReference", "esri/InfoTemplate", "esri/graphic", "dojo/_base/Color", "dojo/dom", "dojo/on", "dojo/dom-attr", "esri/tasks/GeometryService", "esri/tasks/LengthsParameters",
 		"esri/tasks/AreasAndLengthsParameters", "esri/tasks/query", "esri/tasks/QueryTask", "esri/geometry/normalizeUtils", "esri/config", "esri/toolbars/edit", "dojo/_base/event",
 		"esri/arcgis/utils", "esri/dijit/Print", "esri/tasks/PrintTemplate", "dojo/_base/array", "dojo/parser", "dojox/charting/Chart", "dojox/charting/themes/MiamiNice",
 		"dojox/charting/action2d/Tooltip", "dojox/charting/action2d/MoveSlice", "dojox/charting/plot2d/Columns", "dojox/charting/axis2d/Default", "dijit/layout/BorderContainer",
 		"dijit/layout/ContentPane", "dojo/domReady!", "esri/tasks/IdentifyTask", "esri/tasks/IdentifyParameters", "dijit/dijit", "esri/dijit/OverviewMap", "esri/toolbars/navigation",
-		"esri/tasks/BufferParameters" ], function(Map, Extent, Circle, SimpleFillSymbol, Draw, SimpleMarkerSymbol, SimpleLineSymbol, PictureMarkerSymbol, Point, GraphicsLayer, FeatureLayer,
+		"esri/tasks/BufferParameters"], function(Map, Extent, Circle, SimpleFillSymbol, Draw, SimpleMarkerSymbol, SimpleLineSymbol, PictureMarkerSymbol, Point, GraphicsLayer, FeatureLayer,
 		PictureFillSymbol, CartographicLineSymbol, SpatialReference, InfoTemplate, Graphic, Color, dom, on, domAttr, GeometryService, LengthsParameters, AreasAndLengthsParameters, Query, QueryTask,
 		normalizeUtils, esriConfig, Edit, event, arcgisUtils, Print, PrintTemplate, arrayUtils, parser, Chart, theme) {
 	// 以下对象放入全局
@@ -65,7 +65,7 @@ require([ "esri/map", "esri/geometry/Extent", "esri/geometry/Circle", "esri/symb
 		var queryTask = new QueryTask(mapservice_l + "/2");
 		query.where = "OBJECTID=" + evt.graphic.attributes.OBJECTID;
 		query.returnGeometry = true;
-		query.outFields = [ "*" ];
+		query.outFields = ["*"];
 		query.outSpatialReference = myMap.spatialReference;
 		queryTask.execute(query, function(st) {
 			var pointId = st.features[0].attributes.POINTCODE;
@@ -103,8 +103,8 @@ require([ "esri/map", "esri/geometry/Extent", "esri/geometry/Circle", "esri/symb
 				 * chart.render();
 				 */
 				// Define the data
-				var chartData = [ arrival, departure ];
-				var xStr = [ "进站", "出站" ];
+				var chartData = [arrival, departure];
+				var xStr = ["进站", "出站"];
 				var myLabelFunc = function(text, value, precision) {
 					return xStr[text - 1];
 				};
@@ -179,17 +179,15 @@ function mapReady() {
 	editToolbarQ.on("graphic-move-stop,rotate-stop,scale-stop,vertex-delete,vertex-move-stop", function(evt) {
 		if (evt.graphic.geometry.type == "polyline") {
 			dr = "jl"
-		}
-		;
+		};
 		if (evt.graphic.geometry.type == "polygon") {
 			dr = "mj"
-		}
-		;
+		};
 		addToMap(evt.graphic.geometry);
 	});
 
 	// 所有父类图片名称（按照sort降序排列）
-	var restypeImages = [ "zml", "jjl", "gbqcl", "yjfhl", "ryjzl", "fxun", "fxue", "gwzyqx", "xhzyqx", "gdyj", "txyj", "afcqj", "hkyj" ];
+	var restypeImages = ["zml", "jjl", "gbqcl", "yjfhl", "ryjzl", "fxun", "fxue", "gwzyqx", "xhzyqx", "gdyj", "txyj", "afcqj", "hkyj"];
 	// 得到所有资源类型的父类
 	$.get(getparams('ctx') + "/arcmap/poi/findByParentId/" + 1 + "/", function(msg) {
 		var tdStrs = "";
@@ -207,7 +205,7 @@ function mapReady() {
 	query.where = "1=1";
 	query.spatialRelationship = esri.tasks.Query.SPATIAL_REL_INTERSECTS;
 	query.returnGeometry = true;
-	query.outFields = [ "*" ];
+	query.outFields = ["*"];
 	queryTask.execute(query, function(lineFeature) {
 		feature = lineFeature.features;
 		$(feature).each(function(i) {
@@ -217,8 +215,8 @@ function mapReady() {
 }
 
 // ---断面客流start---
-var flowSet = [ 50000, 40000, 30000, 20000 ];
-var flowcolor = [ [ 255, 40, 0 ], [ 255, 136, 0 ], [ 247, 255, 0 ], [ 0, 76, 255 ] ];
+var flowSet = [50000, 40000, 30000, 20000];
+var flowcolor = [[255, 40, 0], [255, 136, 0], [247, 255, 0], [0, 76, 255]];
 // 显示断面客流设置
 function sectionFlow() {
 	document.getElementById("sectionPassenger").style.visibility = "visible";
@@ -296,7 +294,7 @@ function changeColor(msg, k) {
 				var geometry = feature[j].geometry;
 				var symbol;
 				if (flow < flowSet[3]) {// 当客流量小于Ⅳ级响应时，显示绿色
-					symbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([ 0, 255, 119 ]), 3);
+					symbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color([0, 255, 119]), 3);
 				} else if (flow > flowSet[3] && flow <= flowSet[2]) {// 当客流量大于Ⅳ级响应小于Ⅲ级响应时，显示蓝色
 					symbol = new esri.symbol.SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new dojo.Color(flowcolor[3]), 3);
 				} else if (flow > flowSet[2] && flow <= flowSet[1]) {// 当客流量大于Ⅲ级响应小于Ⅱ级响应时，显示黄色
@@ -334,71 +332,34 @@ function ShowMark(tittlestr, contentstr, toppar, leftpar, ShowType) {
 	}
 	$(".infoTemplate").show();
 }
-//通过资源父类ID查询子类
+// 通过资源父类ID查询子类
 function showMaterialToMap(id, img) {
 	var showMerTbodyHtml = "";
 	$.get(getparams('ctx') + "/arcmap/poi/findByParentId/" + id + "/", function(msg) {
 		$(msg).each(
 				function(i) {
-					showMerTbodyHtml += "<tr><td><input type='checkbox' id='material" + msg[i].id + "' name='material' onclick=showMatToMap('" + img + "') value='" + msg[i].id + "'></td><td>" + msg[i].name
+					showMerTbodyHtml += "<tr><td><input type='checkbox' id='material" + msg[i].id + "' name='material' onclick=showMatToMap() value='" + msg[i].id + "'></td><td>" + msg[i].name
 							+ "</td></tr>";
 				});
 		$("#showMerTbody").html(showMerTbodyHtml);
 		showresult();
-		var showAble=document.getElementById("showMer").style.visibility;
-		if("hidden"===showAble){
+		var showAble = document.getElementById("showMer").style.visibility;
+		if ("hidden" === showAble) {
 			document.getElementById("showMer").style.visibility = "visible";
-		}else
-		document.getElementById("showMer").style.visibility = "hidden";
+		} else
+			document.getElementById("showMer").style.visibility = "hidden";
 	});
 }
-//点击资源子类，查询相关联车站，工区等，地图显示分布（用父类图标），右侧显示列表
-function showMatToMap(img) {
+// 点击资源子类，查询相关联车站，工区等，地图显示分布（用父类图标），右侧显示列表
+function showMatToMap() {
 	var html = "";
-	$.ajaxSettings.async = false;
-	$("input[name='material']:checked").each(
-			function() {
-				$.get(getparams('ctx') + "/arcmap/poi/findbyRestypeId/" + $(this).val() + "/", function(msg) {
-					if (msg.length == 0) {
-						return;
-					}
-					$(msg).each(
-							function(i) {
-								$.get(getparams('ctx') + "/arcmap/line/getStation/" + msg[i].station.id, function(stations) {
-									$(stations).each(function(){
-										var station=this;
-										var point = new esri.geometry.Point(station.x, station.y, new esri.SpatialReference({
-											wkid : 4490
-										}));
-										var symbol = new esri.symbol.PictureMarkerSymbol(getparams('ctxStatic') + "/arcmap/images/restypeImage/" + img + ".png", 20, 20);
-										var graphic = new esri.Graphic(point, symbol);
-										graphic.attributes = "cz";
-										myMap.graphics.add(graphic);
-										html += "<tr style='font-weight: bold;background-color:#cbfed0;cursor:hand;'><td>站点名称：</td><td>" + msg[i].station.name + "<img src='"+getparams('ctxStatic') + "/arcmap/images/icon/phone.png"+"' onclick='callMobile(\""+msg[i].personMobile+"\")' style='float:right;margin-right:5px;'/></td>" + "<input type='hidden' value='"
-												+ station.x + "," + station.y + "'>" + "</tr>";
-										html += "<tr><td><div>资源名称：" + isnull(msg[0].restypeId.name) + "</div><div>型号：" + isnull(msg[i].model) + "</div><div>数量：" + isnull(msg[i].amount) + "</div></td>";
-										html += "<td><div>负责人：" + isnull(msg[i].personName) + "</div><div>电话：" + isnull(msg[i].personMobile) + "</div></td></tr>";
-									});
-								},"json");
-							});
-				}, "json");
-				$.ajaxSettings.async = true;
-			})
-	$("#showMerByGeoContent").html(html);
-	showresult();
-	$("#myTab a").eq(0).tab("show");
-	document.getElementById("cxtc").style.visibility = "visible";
-	$("#showMerByGeoContent tr").click(function() {
-		var coordinate=$(this).find("input").val();
-		if(coordinate&&coordinate!=""){
-			var x = coordinate.split(",")[0] * 1;
-			var y = coordinate.split(",")[1] * 1;
-			FlyToXY(x, y, 7);
-			drawAnnotate(x, y);
-		}
-	});
+	$("input[name='material']:checked").each(function() {
+		$.get(getparams('ctx') + "/arcmap/poi/findbyRestypeId/" + $(this).val() + "/", function(materials) {
+			generateMaterialsList("#showMerByGeoContent", materials);
+		}, "json");
+	})
 }
-//""|无
+// ""|无
 function isEmpty(sts) {
 	if (sts == "") {
 		return "无";

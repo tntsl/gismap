@@ -86,9 +86,8 @@ require(["esri/map", "esri/geometry/Extent", "esri/geometry/Circle", "esri/symbo
 	myMap.on("click", createQueryPolygon);
 
 	// proxy页面配置
-	// esri.config.defaults.io.proxyUrl = "http://" + proxyPath +
-	// "/ictmap/proxy.jsp";
-	// esri.config.defaults.io.alwaysUseProxy = false;
+	esri.config.defaults.io.proxyUrl = "http://" + proxyPath + "/proxy.jsp";
+	esri.config.defaults.io.alwaysUseProxy = true;
 	// map-click 点击查询车站
 	queryOrAdd = "Query";
 	function createQueryPolygon(evt) {
@@ -337,7 +336,7 @@ function showWorkArea(msg) {
 		pointIds += this.attributes.POINTID + ",";
 	});
 	var html = "";
-	$.post(ctx + "/arcmap/getWorkArea/" + pointIds + "/", function(workAreas) {
+	$.post(ctx + "/arcmap/getWorkArea/", "workAreaIds=" + pointIds, function(workAreas) {
 		generateWorkAreaList("#workarea", workAreas);
 	}, "json");
 }
@@ -358,7 +357,7 @@ function showRescueTeam(msg) {
 	$(msg.features).each(function() {
 		pointIds += this.attributes.POINTID + ",";
 	});
-	$.post(ctx + "/arcmap/getRescueTeam/" + pointIds + "/", function(rescueTeams) {
+	$.post(ctx + "/arcmap/getRescueTeam/", "pointIds=" + pointIds, function(rescueTeams) {
 		generateRescueTeamList("#rescueTeam", rescueTeams);
 	}, "json");
 }
@@ -390,8 +389,8 @@ function queryForMaterialByParentId(id, img) {
 	$.get(ctx + "/arcmap/poi/findByParentId/" + id + "/", function(msg) {
 		$(msg).each(
 				function(i) {
-					showMerTbodyHtml += "<tr><td><input type='checkbox' id='material" + msg[i].id + "' name='material' onclick=showMatToMap('" + img + "') value='" + msg[i].id + "'></td><td>"
-							+ msg[i].name + "</td></tr>";
+					showMerTbodyHtml += "<tr><td><input type='checkbox' id='material" + msg[i].id + "' name='material' onclick=showMatToMap() value='" + msg[i].id + "'></td><td>" + msg[i].name
+							+ "</td></tr>";
 				});
 		$("#showMerTbody").html(showMerTbodyHtml);
 		showresult();
@@ -453,7 +452,7 @@ function getAllRescueTeams() {
 	}, "json");
 }
 // 查询应急资源
-function showMatToMap(img) {
+function showMatToMap() {
 	myMap.graphics.clear();
 	var materialsToQuery = $("input[name='material']:checked");
 	if (materialsToQuery.length > 0) {
@@ -462,10 +461,8 @@ function showMatToMap(img) {
 			materialParentIds += $(this).val() + ",";
 		});
 		$.get(ctx + "/arcmap/poi/findbyRestypeId/" + materialParentIds + "/", function(materials) {
-			generateMaterialList("#emergency", materials, img);
+			generateMaterialList("#emergency", materials);
 		}, "json");
-	} else {
-		$("#emergency").html("<table class='materialTable emptyData' style='width:100%;'><tr><td colspan='2' align='center'>~~暂时没有数据~~</td></tr></table>");
 	}
 }
 // 地图上面的工具栏----------------------------------------------------------------

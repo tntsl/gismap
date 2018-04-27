@@ -1,6 +1,9 @@
 package com.ict.base.filter;
 
 import java.io.IOException;
+/**
+ * 此过滤器专门为添加参数获取提供服务
+ */
 import java.util.Properties;
 
 import javax.servlet.Filter;

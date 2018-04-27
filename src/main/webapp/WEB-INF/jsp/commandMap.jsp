@@ -418,7 +418,7 @@
 					source : substringMatcher(msg)
 				});
 				$('#allQ .typeahead').bind('typeahead:select', function(ev, suggestion) {
-					$.get(ctx + "/arcmap/poi/getMaterialByResName/" + suggestion + "/", function(materials) {
+					$.get(ctx + "/arcmap/poi/getMaterialByResName/", "names=" + suggestion, function(materials) {
 						generateMaterialList("#emergency", materials);
 					}, "json");
 				});

@@ -188,7 +188,7 @@ function showMaterialByGeo(msg) {
 		// 获取应急资源
 		$.post(ctx + "/arcmap/poi/getMaterial/", "pointCodes=" + pointCodes, function(materials) {
 			$("#emergency").empty();
-			generateMaterialList("#emergency", materials, null, true);
+			generateMaterialList("#emergency", materials, true);
 		}, "json");
 	}
 }

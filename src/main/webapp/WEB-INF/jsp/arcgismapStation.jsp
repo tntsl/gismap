@@ -207,7 +207,7 @@
 					$('#allQ .typeahead').bind(
 							'typeahead:select',
 							function(ev, suggestion) {
-								$.get(getparams('ctx') + "/arcmap/poi/getMaterialByResName/" + suggestion + "/", function(jsonList) {
+								$.get(getparams('ctx') + "/arcmap/poi/getMaterialByResName/", "names=" + suggestion, function(jsonList) {
 									if (jsonList.length != 0) {
 										var html = "";
 										for (var i = 0; i < jsonList.length; i++) {

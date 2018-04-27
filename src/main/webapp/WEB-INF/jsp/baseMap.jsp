@@ -7,16 +7,16 @@
 <head>
 <title>资源地图</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<%-- <link href="${global['gis.resource.url']}/typeahead.js/examples.css" rel="stylesheet" type="text/css" /> --%>
+<link href="${global['gis.resource.url']}/typeahead/examples.css" rel="stylesheet" type="text/css" />
 <link href="${pageContext.request.contextPath}/css/main.css" rel="stylesheet" type="text/css" />
 <link href="${global['gis.resource.url']}/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
 <style type="text/css">
 #cxtc {
 	position: absolute;
 	scrollbar-track-color: white;
-	top: 45px;
+	top: 80px;
 	right: 10px;
-	z-index: 999;
+	z-index: 99;
 	height: 90%;
 	width: 480px;
 	visibility: hidden;
@@ -413,137 +413,61 @@
 	<script type="text/javascript" src="${global['gis.resource.url']}/js/arcgis_js_api/library/3.20/3.20/init.js"></script>
 	<script src="${global['gis.resource.url']}/js/jquery-1.11.1.min.js" type="text/javascript"></script>
 	<script src="${global['gis.resource.url']}/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
-	<%-- 	<script src="${global['gis.resource.url']}/typeahead.js/analytics.js" type="text/javascript"></script> --%>
-	<%-- 	<script src="${global['gis.resource.url']}/typeahead.js/handlebars.js" type="text/javascript"></script> --%>
-	<%-- 	<script src="${global['gis.resource.url']}/typeahead.js/typeahead.bundle.js" type="text/javascript"></script> --%>
+	<script src="${global['gis.resource.url']}/typeahead/analytics.js" type="text/javascript"></script>
+	<script src="${global['gis.resource.url']}/typeahead/handlebars.js" type="text/javascript"></script>
+	<script src="${global['gis.resource.url']}/typeahead/typeahead.bundle.js" type="text/javascript"></script>
 	<script src="${pageContext.request.contextPath}/js/arcmaps.js" type="text/javascript"></script>
 	<script src="${pageContext.request.contextPath}/js/baseMap.js" type="text/javascript"></script>
 	<script src="${pageContext.request.contextPath}/js/main.js" type="text/javascript"></script>
 	<%-- 	<script src="${global['gis.resource.url']}/arcmap/js/echarts-all.js" type="text/javascript"></script> --%>
 	<script type="text/javascript">
-		var substringMatcher = function(strs) {
-			return function findMatches(q, cb) {
-				var matches, substringRegex;
-				matches = [];
-				substrRegex = new RegExp(q, 'i');
-				$.each(strs, function(i, str) {
-					if (substrRegex.test(str)) {
-						matches.push(str);
-					}
-				});
-				cb(matches);
-			};
-		};
 		$(function() {
 			$("[data-toggle='popover']").popover();
 			//bootstrap panel 默认打开
 			$('#collapseFour').collapse('show');
 			getAllMaterials();
 		});
-
-		var cxLeft = 0, cxTop = 0;
-		var flag = false;
-		$(function() {
-			$('#cxtcTitle').mousedown(function(evt) {
-				flag = true;//鼠标按下  
-				var isIE = (document.all) ? true : false;
-				if (isIE) {
-					cxLeft = event.offsetX;
-					cxTop = event.offsetY;
-				} else {
-					cxLeft = evt.pageX;
-					cxTop = evt.pageY;
-				}
-			});
-
-			$('#cxtc').mousemove(function(evt) {
-				if (!flag)
-					return;//开始拖动  
-				var isIE = (document.all) ? true : false;
-				var x = isIE ? event.x : evt.pageX;
-				var y = isIE ? event.y : evt.pageY;
-				x = (x - cxLeft) > 0 ? (x - cxLeft) : 0;
-				y = (y - cxTop) > 0 ? (y - cxTop) : 0;
-				$(this).offset({
-					left : x,
-					top : y
-				});
-			});
-			$(document).mouseup(function(evt) {
-				flag = false;//鼠标抬起  
-			});
-		})
 		function getAllMaterials() {
 			//查询所有应急资源
-			$.get(ctx + "/arcmap/poi/getRestypeName/", function(msg) {
-				$('#allQ .typeahead').typeahead({
-					hint : true,
-					highlight : true,
-					minLength : 1
-				}, {
-					name : 'msg',
-					source : substringMatcher(msg.name)
+			$.get(ctx + "/arcmap/poi/getRestypeName/", function(resourceTypes) {
+				var names = [];
+				$(resourceTypes).each(function() {
+					var resourceType = this;
+					names.push(resourceType.name);
 				});
-				$('#allQ .typeahead').bind(
-						'typeahead:select',
-						function(ev, suggestion) {
-							$.get(ctx + "/arcmap/poi/getMaterialByResName/" + suggestion + "/", function(jsonList) {
-								if (jsonList.length != 0) {
-									var html = "";
-									$.ajaxSettings.async = false;
-									for (var i = 0; i < jsonList.length; i++) {
-										if (jsonList[i].station && jsonList[i].station.name) {
-											$.get(ctx + "/arcmap/line/findPointCzByName/" + jsonList[i].station.name + "/", function(msg) {
-												if (msg.length > 0) {
-													var point = new esri.geometry.Point(msg[0], msg[1], new esri.SpatialReference({
-														wkid : 4490
-													}));
-													var symbol = new esri.symbol.PictureMarkerSymbol(ctxStatic + "/restypeImage/" + jsonList[i].restypeId.parent.shortName + ".png", 25, 25);
-													//symbol.setOffset(0, 13);
-													var graphic = new esri.Graphic(point, symbol);
-													graphic.attributes = "cz";
-													myMap.graphics.add(graphic);
-													html += "<tr style='font-weight: bold;background-color:#cbfed0;cursor:hand;'><td>站点名称：</td><td>" + jsonList[i].station.name + "<img src='"
-															+ ctxStatic + "/icon/phone.png" + "' onclick='callMobile(\"" + isnull(jsonList[i].personMobile)
-															+ "\")' style='float:right;margin-right:5px;'/></td>" + "<input type='hidden' value='"+msg[0][0]+","+msg[0][1]+"'>" + "</tr>";
-													html += "<tr><td><div>资源名称：" + isnull(jsonList[i].restypeId.name) + "</div><div>型号：" + isnull(jsonList[i].model) + "</div><div>数量："
-															+ isnull(jsonList[i].amount) + "</div></td>";
-													html += "<td><div>负责人：" + isnull(jsonList[i].personName) + "</div><div>电话：" + isnull(jsonList[i].personMobile) + "</div></td></tr>";
-												}
-											}, "json")
-										}
-									}
-									$.ajaxSettings.async = true;
-									$("#showMerByGeoContent").html(html);
-									showresult();
-									$("#myTab>li").each(function(index, obj) {
-										if (0 != index) {
-											$(obj).removeAttr("class");
-										} else {
-											$(obj).attr("class", "active");
-										}
-									});
-									$("#myTabContent>div").each(function(index, obj) {
-										if (0 != index) {
-											$(obj).attr("class", $(obj).attr("class").replace(/in|active/g, "").trim());
-										} else {
-											$(obj).attr("class", $(obj).attr("class") + " in active");
-										}
-									});
-									document.getElementById("cxtc").style.visibility = "visible";
-									$("#showMerByGeoContent tr").click(function() {
-										var x = $(this).find("input").val().split(",")[0] * 1;
-										var y = $(this).find("input").val().split(",")[1] * 1;
-										FlyToXY(x, y, 7);
-										drawAnnotate(x, y);
-									});
-								} else {
-									alert("没有该资源");
-								}
-							}, "json")
-						});
-			});
+				$('#allQ .typeahead').typeahead({
+					highlight : true
+				}, {
+					name : 'names',
+					displayKey : 'value',
+					source : substringMatcher(names)
+				});
+				$('#allQ .typeahead').bind('typeahead:select', function(ev, suggestion) {
+					$.post(ctx + "/arcmap/poi/getMaterialByResName/", "names=" + suggestion.value, function(materials) {
+						generateMaterialList("#emergency", materials);
+					}, "json")
+				});
+			}, "json");
 		}
+
+		var substringMatcher = function(strs) {
+			return function findMatches(q, cb) {
+				var matches, substrRegex;
+				matches = [];//定义字符串数组
+				substrRegex = new RegExp(q, 'i');
+				//用正则表达式来确定哪些字符串包含子串的'q'
+				$.each(strs, function(i, str) {
+					//遍历字符串池中的任何字符串
+					if (substrRegex.test(str)) {
+						matches.push({
+							value : str
+						});
+					}
+					//包含子串的'q',将它添加到'match'
+				});
+				cb(matches);
+			};
+		};
 	</script>
 </body>
 </html>

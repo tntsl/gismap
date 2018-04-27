@@ -264,9 +264,9 @@ public class ArcMapManageController {
 	 *
 	 * @return
 	 */
-	@RequestMapping("getWorkArea/{workAreaIds}")
+	@RequestMapping("getWorkArea")
 	@ResponseBody
-	public String getWorkArea(@PathVariable String workAreaIds) {
+	public String getWorkArea(String workAreaIds) {
 		List<Areamanagement> workAreas = areamanagementService.getWorkAreasByIds(workAreaIds);
 		return new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().toJson(workAreas);
 	}
@@ -302,10 +302,10 @@ public class ArcMapManageController {
 	 *
 	 * @return
 	 */
-	@RequestMapping("getRescueTeam/{ids}")
+	@RequestMapping("getRescueTeam")
 	@ResponseBody
-	public String getRescueTeam(@PathVariable String ids) {
-		List<RescueTeam> rescueTeams = rescueTeamService.getByIds(ids);
+	public String getRescueTeam(String pointIds) {
+		List<RescueTeam> rescueTeams = rescueTeamService.getByIds(pointIds);
 		return new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create().toJson(rescueTeams);
 	}
 
