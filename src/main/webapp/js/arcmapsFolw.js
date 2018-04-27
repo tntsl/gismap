@@ -338,7 +338,7 @@ function showMaterialToMap(id, img) {
 	$.get(getparams('ctx') + "/arcmap/poi/findByParentId/" + id + "/", function(msg) {
 		$(msg).each(
 				function(i) {
-					showMerTbodyHtml += "<tr><td><input type='checkbox' id='material" + msg[i].id + "' name='material' onclick=showMatToMap() value='" + msg[i].id + "'></td><td>" + msg[i].name
+					showMerTbodyHtml += "<tr><td><input type='checkbox' id='material" + msg[i].id + "' name='material' onclick=showMaterialsByParentId() value='" + msg[i].id + "'></td><td>" + msg[i].name
 							+ "</td></tr>";
 				});
 		$("#showMerTbody").html(showMerTbodyHtml);
@@ -351,7 +351,7 @@ function showMaterialToMap(id, img) {
 	});
 }
 // 点击资源子类，查询相关联车站，工区等，地图显示分布（用父类图标），右侧显示列表
-function showMatToMap() {
+function showMaterialsByParentId() {
 	var html = "";
 	$("input[name='material']:checked").each(function() {
 		$.get(getparams('ctx') + "/arcmap/poi/findbyRestypeId/" + $(this).val() + "/", function(materials) {

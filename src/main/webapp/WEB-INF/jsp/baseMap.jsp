@@ -14,10 +14,10 @@
 #cxtc {
 	position: absolute;
 	scrollbar-track-color: white;
-	top: 80px;
+	top: 150px;
 	right: 10px;
 	z-index: 99;
-	height: 90%;
+	height: 80%;
 	width: 480px;
 	visibility: hidden;
 	filter: alpha(opacity = 90);
@@ -272,7 +272,7 @@
          </div> -->
 		<!-- 标绘 -->
 		<!-- 全文搜索框 -->
-		<div id="allQ" style="position: absolute; top: 45px; right: 10px; width: 210px; height: 150px; z-index: 998; overflow: auto;">
+		<div id="allQ" style="position: absolute; top: 40px; right: 40px; width: 200px; height: 150px; z-index: 998; overflow: auto;">
 			<input type="text" class="typeahead" id="allQuery" name="allQuery" placeholder="请输入物资名称" />
 		</div>
 		<!-- 全文搜索框 -->
@@ -404,7 +404,7 @@
 		<!-- 断面客流 -->
 	</div>
 	<script type="text/javascript">
-		var ctx = "${ctx}";
+		var ctx = "${pageContext.request.contextPath}";
 		var ctxStatic = "${global['gis.resource.url']}";
 	</script>
 	<script src="${pageContext.request.contextPath}/js/arcmaps-config.js" type="text/javascript"></script>

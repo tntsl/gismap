@@ -14,9 +14,11 @@ function addToMap(geometry) {
 						+ geometry.x + "," + geometry.y + ")' value='确定'></td></tr>");
 		myMap.infoWindow.show(geometry);
 	} else if (dr == "cx") {
-		showBuffer(geometry);
+		querySocialResources(geometry);
 		queryWorkArea(geometry);
 		queryRescueTeam(geometry);
+		// 查询救援物资
+		queryMaterialByGeometries(geometry);
 		var symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID, null, new dojo.Color([255, 0, 0, 0.15]));
 		var graphic = new esri.Graphic(geometry, symbol);
 		myMap.graphics.add(graphic);
@@ -82,8 +84,8 @@ function outputDistance(result) {
 		var graphic = new esri.Graphic(circle, symbol);
 		myMap.graphics.add(graphic);
 		myMap.centerAndZoom(point, 7);
-		showBufferCommand(circle);
-		queryStationByGeometryCommand(circle);
+		querySocialResources(circle);
+		queryMaterialByGeometries(circle);
 	} else if (toolOrCom == "tool") {
 		var CurX = measuregeometry.paths[0][measuregeometry.paths[0].length - 1][0];
 		var CurY = measuregeometry.paths[0][measuregeometry.paths[0].length - 1][1];
@@ -105,7 +107,7 @@ function outputAreaAndLength(result) {
 }
 
 // 划圆查询区域内消防队、公安局、医院
-function showBuffer(geometries) {
+function querySocialResources(geometries) {
 	var query = new esri.tasks.Query();
 	var queryTask = new esri.tasks.QueryTask(mapservice_l + "/4");
 	query.geometry = geometries;
@@ -114,8 +116,7 @@ function showBuffer(geometries) {
 	query.outFields = ["*"];
 	query.spatialRelationship = esri.tasks.Query.SPATIAL_REL_CONTAINS;
 	query.outSpatialReference = myMap.spatialReference;
-	queryTask.execute(query, showCxjgCommand);
-	queryStationByGeometry(geometries);
+	queryTask.execute(query, showSocialResources);
 	// dr = "";
 }
 
@@ -130,7 +131,7 @@ function queryWorkArea(geometries) {
 	query.spatialRelationship = esri.tasks.Query.SPATIAL_REL_CONTAINS;
 	query.outSpatialReference = myMap.spatialReference;
 	queryTask.execute(query, showWorkArea);
-	queryStationByGeometry(geometries);
+	queryMaterialByGeometries(geometries);
 	// dr = "";
 }
 
@@ -145,12 +146,11 @@ function queryRescueTeam(geometries) {
 	query.spatialRelationship = esri.tasks.Query.SPATIAL_REL_CONTAINS;
 	query.outSpatialReference = myMap.spatialReference;
 	queryTask.execute(query, showRescueTeam);
-	queryStationByGeometry(geometries);
 	// dr = "";
 }
 
 // 通过geometries所画图形查询所包含车站及救援物资
-function queryStationByGeometry(geometries) {
+function queryMaterialByGeometries(geometries) {
 	var query = new esri.tasks.Query();
 	var queryTask = new esri.tasks.QueryTask(mapservice_l + "/2");
 	query.geometry = geometries;
@@ -188,10 +188,140 @@ function showMaterialByGeo(msg) {
 		// 获取应急资源
 		$.post(ctx + "/arcmap/poi/getMaterial/", "pointCodes=" + pointCodes, function(materials) {
 			$("#emergency").empty();
-			generateMaterialList("#emergency", materials, true);
+			generateMaterialList("#emergency", materials, true, false);
 		}, "json");
 	}
 }
+
+// 显示测量距离
+function outputDistance(result) {
+	var CurX = measuregeometry.paths[0][measuregeometry.paths[0].length - 1][0];
+	var CurY = measuregeometry.paths[0][measuregeometry.paths[0].length - 1][1];
+	var CurPos = new esri.geometry.Point(CurX, CurY, myMap.spatialReference);
+	myMap.infoWindow.setTitle("距离测量");
+	myMap.infoWindow.setContent(" 测 量 长 度 ： <strong>" + (result.result.lengths * 1).toFixed(3) + "千米</strong>");
+	myMap.infoWindow.show(CurPos);
+}
+
+// 显示测量面积
+function outputAreaAndLength(result) {
+	var CurX = (measuregeometry.cache._extent.xmax + measuregeometry.cache._extent.xmin) / 2;
+	var CurY = (measuregeometry.cache._extent.ymax + measuregeometry.cache._extent.ymin) / 2
+	var CurPos = new esri.geometry.Point(CurX, CurY, myMap.spatialReference);
+	myMap.infoWindow.setTitle("面积测量");
+	myMap.infoWindow.setContent(" 面积 ： <strong>" + (result.result.areas * 1).toFixed(3) + "平方千米</strong><br/> 周长：" + (result.result.lengths * 1).toFixed(3) + "千米");
+	myMap.infoWindow.show(CurPos);
+}
+
+// 显示框选查询、多边形查询和划圆查询后社会资源结果
+function showSocialResources(msg) {
+	var code = "";
+	$(msg.features).each(function() {
+		var feature = this;
+		code += feature.attributes.OBJECTID + ",";
+	});
+	if (code != "") {
+		$.post(ctx + "/arcmap/poi/getPoi", "data=" + code, function(socialResources) {
+			if (socialResources && socialResources.length > 0) {
+				$(socialResources).each(
+						function() {
+							var socialResource = this;
+							var point = new esri.geometry.Point((socialResource.x || ""), (socialResource.y || ""), map.spatialReference);
+							var materialTable = $("<table class='materialTable'></table>");
+							var firstTrNode = $("<tr style='font-weight: bold;width:150px;background-color:#cbfed0;cursor:hand;'></tr>");
+							var firstTrTdNode = $("<td style='width:65px;' onclick='flyToAndNotice(" + (socialResource.x || "") + "," + (socialResource.y || "") + ")'>名称："
+									+ (socialResource.name || "") + "</td>");
+							var firstTrTdImgNode = $("<img src='" + ctxStatic + "/images/icon/phone.png' onclick='callMobile(\"" + (socialResource.mobile || "")
+									+ "\")' style='float:right;margin-right:5px;'/>");
+							var firstTrTdHiddenNode = $("<input type='hidden' value='" + (socialResource.x || "") + "," + (socialResource.y || "") + "'>");
+							firstTrNode.append(firstTrTdNode).append(firstTrTdImgNode);
+							var secondeTrNode = $("<tr></tr>");
+							var secondeTrTdNode = $("<td><div>地址：" + (socialResource.addr || "") + "</div></td><div>负责人：" + (socialResource.person || "") + "</div><div>电话："
+									+ (socialResource.mobile || "") + "</div>");
+							secondeTrNode.append(secondeTrTdNode);
+							materialTable.append(firstTrNode).append(secondeTrNode);
+							switch (socialResource.stype) {
+								case "1" :
+									var symbol = new esri.symbol.PictureMarkerSymbol(ctxStatic + "/images/icon/04.png", 25, 25);
+									$("#policeOffice").append(materialTable);
+									break;
+								case "2" :
+									var symbol = new esri.symbol.PictureMarkerSymbol(ctxStatic + "/images/icon/05.png", 25, 25);
+									$("#hospital").append(materialTable);
+									break;
+								case "3" :
+									var symbol = new esri.symbol.PictureMarkerSymbol(ctxStatic + "/images/icon/03.png", 25, 25);
+									$("#fireBrigade").append(materialTable);
+									break;
+								default :
+							}
+							var graphic = new esri.Graphic(point, symbol);
+							graphic.attributes = socialResource.stype;
+							var infoTemplate = new esri.InfoTemplate();
+							infoTemplate.setTitle((socialResource.name || ""));
+							infoTemplate.setContent("地&nbsp;&nbsp;&nbsp;址：" + (socialResource.addr || "") + "<br>" + "电&nbsp;&nbsp;&nbsp;话：" + (socialResource.mobile || "") + "<br>" + "负责人："
+									+ (socialResource.person || ""));
+							graphic.setInfoTemplate(infoTemplate);
+							myMap.graphics.add(graphic);
+						});
+			} else {
+				var emptyTable = '<table class="materialTable emptyData"><tr><td colspan="2" style="text-align: center;">~~暂时没有相关数据~~</td></tr></table>'
+				$("#policeOffice").html(emptyTable);
+				$("#hospital").html(emptyTable);
+				$("#fireBrigade").html(emptyTable);
+			}
+			showresult();
+			toolbar.deactivate();
+		}, "json");
+	}
+}
+// 通过geometry查询得到救援队msg，通过ID查询救援队
+function showRescueTeam(msg) {
+	$(myMap.graphics.graphics).each(function() {
+		var graphic = this;
+		if (graphic.attributes && "jyd" === graphic.attributes) {
+			myMap.graphics.remove(graphic);
+		}
+	});
+	if (msg.features.length == 0) {
+		$("#rescue").html('<table class="materialTable emptyData" style="width:100%;"><tr><td colspan="2" style="text-align: center;">~~暂时没有数据~~</td></tr></table>');
+		return;
+	}
+	var pointIds = "";
+	$(msg.features).each(function() {
+		pointIds += this.attributes.POINTID + ",";
+	});
+	$.post(ctx + "/arcmap/getRescueTeam/", "pointIds=" + pointIds, function(rescueTeams) {
+		generateRescueTeamList("#rescueTeam", rescueTeams);
+	}, "json");
+}
+
+// 通过geometry查询得到工区msg，通过ID查询工区
+function showWorkArea(msg) {
+	$(myMap.graphics.graphics).each(function() {
+		var graphic = this;
+		if (graphic.attributes && "workArea" === graphic.attributes) {
+			myMap.graphics.remove(graphic);
+		}
+	});
+	if (msg.features.length == 0) {
+		$("#workarea").html('<table class="materialTable emptyData" style="width:100%;"><tr><td colspan="2" style="text-align: center;">~~暂时没有数据~~</td></tr></table>');
+		return;
+	}
+	var pointIds = "";
+	$(msg.features).each(function() {
+		pointIds += this.attributes.POINTID + ",";
+	});
+	var html = "";
+	$.post(ctx + "/arcmap/getWorkArea/", "workAreaIds=" + pointIds, function(workAreas) {
+		generateWorkAreaList("#workarea", workAreas);
+	}, "json");
+}
+function flyToAndNotice(x, y) {
+	FlyToXY(x, y, 7);
+	drawAnnotate(x, y);
+}
+
 // -----工具栏------
 // 移动
 function movemap() {

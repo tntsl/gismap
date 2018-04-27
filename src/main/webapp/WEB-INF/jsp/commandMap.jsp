@@ -9,16 +9,16 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link href="${global['gis.resource.url']}/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
 <link href="${pageContext.request.contextPath}/css/main.css" rel="stylesheet" type="text/css" />
-<%-- <link href="${global['gis.resource.url']}/typeahead.js/examples.css" rel="stylesheet" type="text/css" /> --%>
+<link href="${global['gis.resource.url']}/typeahead/examples.css" rel="stylesheet" type="text/css" />
 <style type="text/css">
 #cxtc {
 	position: absolute;
 	scrollbar-track-color: white;
-	top: 45px;
+	top: 150px;
 	right: 10px;
-	z-index: 999;
-	height: 90%;
-	max-width: 450px;
+	z-index: 99;
+	height: 80%;
+	width: 340px;
 	visibility: hidden;
 	filter: alpha(opacity = 90);
 	opacity: 0.9;
@@ -260,7 +260,7 @@
          </div> -->
 		<!-- 标绘 -->
 		<!-- 全文搜索框 -->
-		<div id="allQ" style="position: absolute; top: 45px; right: 10px; width: 210px; height: 150px; z-index: 998; overflow: auto;">
+		<div id="allQ" style="position: absolute; top: 40px; right: 45px; width: 200px; height: 150px; z-index: 998; overflow: auto;">
 			<input type="text" class="typeahead" id="allQuery" name="allQuery" placeholder="请输入物资名称" />
 		</div>
 		<!-- 全文搜索框 -->
@@ -377,9 +377,9 @@
 	<link type="text/css" rel="stylesheet" href="${global['gis.resource.url']}/js/arcgis_js_api/library/3.20/3.20/esri/css/esri.css" />
 	<script type="text/javascript" src="${global['gis.resource.url']}/js/arcgis_js_api/library/3.20/3.20/init.js"></script>
 	<script src="${global['gis.resource.url']}/js/jquery-1.11.1.min.js" type="text/javascript"></script>
-	<%-- 	<script src="${global['gis.resource.url']}/typeahead.js/analytics.js" type="text/javascript"></script> --%>
-	<%-- 	<script src="${global['gis.resource.url']}/typeahead.js/handlebars.js" type="text/javascript"></script> --%>
-	<%-- 	<script src="${global['gis.resource.url']}/typeahead.js/typeahead.bundle.js" type="text/javascript"></script> --%>
+	<script src="${global['gis.resource.url']}/typeahead/analytics.js" type="text/javascript"></script>
+	<script src="${global['gis.resource.url']}/typeahead/handlebars.js" type="text/javascript"></script>
+	<script src="${global['gis.resource.url']}/typeahead/typeahead.bundle.js" type="text/javascript"></script>
 	<script src="${global['gis.resource.url']}/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
 	<script id='arcmapsjs' src="${pageContext.request.contextPath}/js/arcmaps.js" type="text/javascript"></script>
 	<script src="${pageContext.request.contextPath}/js/baseMap.js" type="text/javascript"></script>
@@ -387,20 +387,6 @@
 	<script src="${global['gis.resource.url']}/echarts/echarts-all.js" type="text/javascript"></script>
 	<script type="text/javascript">
 		var circleRadius = 1000;
-		var substringMatcher = function(strs) {
-			return function findMatches(q, cb) {
-				var matches, substringRegex;
-				matches = [];
-				substrRegex = new RegExp(q, 'i');
-				$.each(strs, function(i, str) {
-					if (substrRegex.test(str)) {
-						matches.push(str);
-					}
-				});
-				cb(matches);
-			};
-		};
-		var cxLeft = 0, cxTop = 0;
 		$(function() {
 			$("[data-toggle='popover']").popover();
 			$('#collapseFour').collapse('show');
@@ -408,22 +394,46 @@
 		})
 		function getAllMaterials() {
 			//查询所有应急资源
-			$.post(ctx + "/arcmap/poi/getRestypeName/", function(msg) {
+			$.get(ctx + "/arcmap/poi/getRestypeName/", function(resourceTypes) {
+				var names = [];
+				$(resourceTypes).each(function() {
+					var resourceType = this;
+					names.push(resourceType.name);
+				});
 				$('#allQ .typeahead').typeahead({
-					hint : true,
-					highlight : true,
-					minLength : 1
+					highlight : true
 				}, {
-					name : 'msg',
-					source : substringMatcher(msg)
+					name : 'names',
+					displayKey : 'value',
+					source : substringMatcher(names)
 				});
 				$('#allQ .typeahead').bind('typeahead:select', function(ev, suggestion) {
-					$.get(ctx + "/arcmap/poi/getMaterialByResName/", "names=" + suggestion, function(materials) {
+					$.post(ctx + "/arcmap/poi/getMaterialByResName/", "names=" + suggestion.value, function(materials) {
 						generateMaterialList("#emergency", materials);
-					}, "json");
+					}, "json")
 				});
-			}, "json")
+			}, "json");
 		}
+
+		var substringMatcher = function(strs) {
+			return function findMatches(q, cb) {
+				var matches, substrRegex;
+				matches = [];//定义字符串数组
+				substrRegex = new RegExp(q, 'i');
+				//用正则表达式来确定哪些字符串包含子串的'q'
+				$.each(strs, function(i, str) {
+					//遍历字符串池中的任何字符串
+					if (substrRegex.test(str)) {
+						matches.push({
+							value : str
+						});
+					}
+					//包含子串的'q',将它添加到'match'
+				});
+				cb(matches);
+			};
+		};
+
 		// 预警提示圈
 		function addCommandCircle() {
 			var comX = "${comX}".split(",");
@@ -432,7 +442,7 @@
 				circleX = comX[0] * 1;
 				circleY = comY[0] * 1;
 				var point = new esri.geometry.Point(circleX, circleY, myMap.spatialReference);
-				var symbolPoint = new esri.symbol.PictureMarkerSymbol(ctxStatic + "/icon/SelPoint.gif", 30, 30);
+				var symbolPoint = new esri.symbol.PictureMarkerSymbol(ctxStatic + "/images/icon/SelPoint.gif", 30, 30);
 				var graphicPoint = new esri.Graphic(point, symbolPoint);
 				myMap.graphics.add(graphicPoint);
 				var symbol = new esri.symbol.SimpleFillSymbol(esri.symbol.SimpleFillSymbol.STYLE_SOLID, null, new dojo.Color([255, 0, 0, 0.15]));
@@ -442,8 +452,9 @@
 				var graphic = new esri.Graphic(circle, symbol);
 				myMap.graphics.add(graphic);
 				myMap.centerAndZoom(point, 7);
-				showBufferCommand(circle);
+				querySocialResources(circle);
 				queryRescueTeam(circle);
+				queryMaterialByGeometries(circle);
 			} else if (comX.length == 2) {
 				toolOrCom = "com";
 				circleX = (comX[0] * 1 + comX[1] * 1) / 2;
@@ -465,6 +476,9 @@
 		window.onbeforeunload = function() {
 			closeWindow();
 		}
+		setTimeout(function(){
+			addCommandCircle();
+		}, 2000);
 	</script>
 </body>
 </html>

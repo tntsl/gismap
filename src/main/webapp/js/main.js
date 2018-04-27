@@ -14,17 +14,6 @@
 //	});
 //});
 
-// 获取当前网址，如： http://localhost:8083/uimcardprj/share/meun.jsp
-var curWwwPath = window.document.location.href;
-// 获取主机地址之后的目录，如： uimcardprj/share/meun.jsp
-var pathName = window.document.location.pathname;
-var pos = curWwwPath.indexOf(pathName);
-// 获取主机地址，如： http://localhost:8083
-var localhostPaht = curWwwPath.substring(0, pos);
-// 获取带"/"的项目名，如：/uimcardprj
-var projectName = pathName.substring(0, pathName.substr(1).indexOf('/') + 1);
-var ctx = localhostPaht + projectName;
-
 // 地图维护页面加载后执行
 function manageMapReady() {
 	getAllXfd();
@@ -104,7 +93,6 @@ function getAllPrevention() {
 	$.post(ctx + "/arcmap/findPreventionAll/", function (msg) {
 		var html = "";
 		var dics={"safetyDoor":"安全门","escalator":"电梯","passageway":"出入口","stationHall":"站厅","stationPlat":"站台","interval":"区间","remarks":"其他"};
-		$.ajaxSettings.async = false;
 		$(msg).each(function(){
 			var prevention=this;
 			if(prevention.safetyDoor=="正常"&&prevention.escalator=="正常"&&prevention.passageway=="正常"&&prevention.stationHall=="正常"&&prevention.stationPlat=="正常"&&prevention.interval=="正常"&&prevention.remarks=="正常"){
@@ -145,7 +133,6 @@ function getAllPrevention() {
 			}
 			html+="</table>";
 		});
-		$.ajaxSettings.async = true;
 		$("#prevention").html(html);
 		showresult();
 		$("#myTab a").filter("[href$='prevention']").tab("show");
@@ -167,19 +154,17 @@ function btnmouse(btn, type) {
 
 // select的change事件
 function ChangeLine(Lineid, stationid) {
-	var stationstr = "<option value='-8'>请选择车站</option>";
-	$.ajaxSettings.async = false;
 	$.post(ctx + "/sys/dic/station/getStationByLineIdAjax", {
 		lineId: $("#" + Lineid).val(),
 		random: Math.random()
 	}, function (jsonlist) {
+		var stationstr = "<option value='-8'>请选择车站</option>";
 		$(jsonlist).each(
 			function (i) {
 			stationstr += "<option value=\"" + jsonlist[i].id + "\">" + jsonlist[i].name + "</option>";
 		});
+		$("#" + stationid).html(stationstr);
 	},"json");
-	$.ajaxSettings.async = true;
-	$("#" + stationid).html(stationstr);
 }
 
 // 普通业务事件-----------------------------------------
@@ -667,7 +652,7 @@ function generateDepotForm(x, y, station, selectNode, depot) {
 }
 // 生成应急物资列表
 var colorFulSelections=["blue","red","green","purple"];
-function generateMaterialList(target,materials,keepPreviousData){
+function generateMaterialList(target,materials,keepPreviousData,needShowMaterialsOnMap){
 	var searchTool="<table id='queryTable' style='width:100%;'><tr><td><input name='keyWords' style='margin:5px;width:65%;' placeholder='请输入要查询的关键字。。' onfocus='addEnterListen(\""+target+"\",this)' onblur='clearEnterListen();' /><button type='button' onclick='filterMaterialList(\""+target+"\",this)'>查找</button>&nbsp;<button type='button' onclick='resetMaterialList(\""+target+"\",this)'>重置</button></td></tr></table>";
 	// 是否保留之前的记录
 	if(keepPreviousData!==true){
@@ -698,9 +683,11 @@ function generateMaterialList(target,materials,keepPreviousData){
 				if(!station){
 					return;
 				}
-				var img=material.restypeId.parent.shortName;
-				var graphic= generateMaterialPoint(station,img);
-				myMap.graphics.add(graphic);
+				if(needShowMaterialsOnMap&&needShowMaterialsOnMap===true){
+					var img=material.restypeId.parent.shortName;
+					var graphic= generateMaterialPoint(station,img);
+					myMap.graphics.add(graphic);
+				}
 				var addressDetail="";
 				if(material.addressDetail){
 					addressDetail =material.addressDetail=="库存"?"":"<font color='red' >&nbsp;["+material.addressDetail+"]</font>";
