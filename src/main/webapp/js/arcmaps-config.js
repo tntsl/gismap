@@ -20,5 +20,5 @@ var geoService = "http://172.21.11.135:6080/arcgis/rest/services/Utilities/Geome
 var center_X = 117.2034899;
 var center_y = 39.165486;
 var scale = 10;
-// *********定义要加载的arcgis for js 库地址,用来给arcigs 库文件指定路径*********
-location.gisResourceUrl = "localhost";
+// *********定义要加载的arcgis for js 库地址,用来给arcigs 库文件指定路径,如无必要，请到application.properties设置*********
+//location.gisResourceUrl = "localhost";

@@ -288,6 +288,7 @@
 	<script type="text/javascript">
 		var ctx = "${pageContext.request.contextPath}";
 		var ctxStatic = "${global['gis.resource.url']}";
+		location.gisResourceUrl = ctxStatic.replace("http://", "");
 	</script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/js/arcmaps-config.js"></script>
 	<link type="text/css" rel="stylesheet" href="${global['gis.resource.url']}/js/arcgis_js_api/library/3.20/3.20/dijit/themes/tundra/tundra.css" />
